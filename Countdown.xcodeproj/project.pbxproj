@@ -12,6 +12,7 @@
 		34F6F78D29525086001D764B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F6F78C29525086001D764B /* ContentView.swift */; };
 		34F6F78F29525088001D764B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34F6F78E29525088001D764B /* Assets.xcassets */; };
 		34F6F79229525088001D764B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34F6F79129525088001D764B /* Preview Assets.xcassets */; };
+		34F6F79F295250AD001D764B /* TimerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F6F79E295250AD001D764B /* TimerModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		34F6F78C29525086001D764B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		34F6F78E29525088001D764B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		34F6F79129525088001D764B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		34F6F79E295250AD001D764B /* TimerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,8 +80,9 @@
 		34F6F78929525086001D764B /* Countdown Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				34F6F79D29525099001D764B /* View */,
+				34F6F79C2952508E001D764B /* Model */,
 				34F6F78A29525086001D764B /* CountdownApp.swift */,
-				34F6F78C29525086001D764B /* ContentView.swift */,
 				34F6F78E29525088001D764B /* Assets.xcassets */,
 				34F6F79029525088001D764B /* Preview Content */,
 			);
@@ -92,6 +95,22 @@
 				34F6F79129525088001D764B /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		34F6F79C2952508E001D764B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				34F6F79E295250AD001D764B /* TimerModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		34F6F79D29525099001D764B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				34F6F78C29525086001D764B /* ContentView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -192,6 +211,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F6F79F295250AD001D764B /* TimerModel.swift in Sources */,
 				34F6F78D29525086001D764B /* ContentView.swift in Sources */,
 				34F6F78B29525086001D764B /* CountdownApp.swift in Sources */,
 			);

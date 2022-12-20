@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct Countdown_Watch_AppApp: App {
+    @StateObject var timerModel: TimerModel = .init()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(timerModel)
         }
     }
 }
