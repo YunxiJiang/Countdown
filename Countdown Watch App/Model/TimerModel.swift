@@ -21,11 +21,15 @@ class TimerModel: NSObject, ObservableObject {
     @Published var totalSeconds: Int = 0
     @Published var staticTotalSeconds: Int = 0
     
-    // Timer isFinished
-//    @Published var isFinished: Bool = false
+    // isFinished whole countdown
+    @Published var isFinished: Bool = false
+    
+    // Timer sound
+    @Published var timerSound: Timer? = nil
     
     func startTimer(){
         isStarted = true
+        isFinished = false
         // Setting String value
         timerStringValue = "\(minutes >= 10 ? "\(minutes)" : "0\(minutes)"):\(seconds >= 10 ? "\(seconds)" : "0\(seconds)")"
         
@@ -36,6 +40,7 @@ class TimerModel: NSObject, ObservableObject {
     
     func stopTimer(){
         isStarted = false
+        
         withAnimation {
             minutes = 0
             seconds = 0
@@ -54,9 +59,15 @@ class TimerModel: NSObject, ObservableObject {
         seconds = (totalSeconds % 60)
         timerStringValue = "\(minutes >= 10 ? "\(minutes)" : "0\(minutes)"):\(seconds >= 10 ? "\(seconds)" : "0\(seconds)")"
         if minutes == 0 && seconds == 0 {
-            
+            isFinished = true
+            timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+                WKInterfaceDevice.current().play(.success)
+            })
             stopTimer()
         }
+    }
+    
+    func addNotification(){
         
     }
 }

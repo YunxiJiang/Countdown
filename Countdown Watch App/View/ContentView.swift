@@ -38,7 +38,7 @@ struct ContentView: View {
                         
                         Circle()
                             .trim(from: 0, to: timerModel.progress)
-                            .stroke(Color.green.opacity(0.7), lineWidth: 13)
+                            .stroke(Color.green.opacity(0.6), lineWidth: 11)
                             .animation(.easeInOut, value: timerModel.progress)
                     }
                     
@@ -47,35 +47,37 @@ struct ContentView: View {
                         Text(timerModel.timerStringValue)
                             .font(.system(size: 45, weight: .bold))
                             .rotationEffect(.init(degrees: 90))
-
+                        
                     } else {
-                        Stepper(value: $stepperIndex, in: (5.0...50.0), step: 5.0, format: .number) {
-                            
-                        }
-                        .foregroundColor(.white)
-                        .accentColor(.clear)
-                        .rotationEffect(.init(degrees: 90))
-                        .padding(10)
-
+                        Stepper(value: $stepperIndex, in: (5.0...50.0), step: 5.0, format: .number) {}
+                            .foregroundColor(.white)
+                            .accentColor(.clear)
+                            .rotationEffect(.init(degrees: 90))
+                            .padding(10)
+                        
+                    }
+                    
+                    // Notification for finishing countdown
+                    if (timerModel.isFinished) {
+                        
                     }
                     
                 }
                 .frame(height: proxy.size.width)
                 .rotationEffect(.init(degrees: -90))
                 .onTapGesture {
-                    
                     if timerModel.isStarted == false {
-                        timerModel.minutes = Int(stepperIndex)
+                        WKInterfaceDevice.current().play(.start)
+                        timerModel.seconds = Int(stepperIndex)
                         timerModel.isStarted = true
                         timerModel.startTimer()
                     } else{
+                        WKInterfaceDevice.current().play(.directionDown)
                         timerModel.stopTimer()
                     }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            
-            
         }
         .padding()
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
@@ -83,8 +85,19 @@ struct ContentView: View {
                 timerModel.updateTimer()
             }
         }
+        .alert(isPresented: $timerModel.isFinished) {
+            Alert(title: Text("The time is up"), message: nil, dismissButton: .cancel(Text("Close")){
+                timerModel.timerSound?.invalidate()
+                timerModel.timerSound = nil
+                timerModel.stopTimer()
+            })
+        }
     }
+    
+    
+    
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
