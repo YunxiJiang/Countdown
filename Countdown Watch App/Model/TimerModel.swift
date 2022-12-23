@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 class TimerModel: NSObject, ObservableObject {
     
@@ -63,11 +64,22 @@ class TimerModel: NSObject, ObservableObject {
             timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
                 WKInterfaceDevice.current().play(.success)
             })
+            Notification() 
             stopTimer()
         }
     }
     
-    func addNotification(){
+    func Notification(){
+         
+        let content = UNMutableNotificationContent()
+        content.title = "Countdown"
+        content.body = "The Time is Up \n (Back to app, close the ringing)"
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        
+        let req = UNNotificationRequest(identifier: "MSG", content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
         
     }
 }

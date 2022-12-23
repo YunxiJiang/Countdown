@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
     
     @EnvironmentObject var timerModel: TimerModel
     
+    // Countdown time
     @State var stepperIndex: Double = 25.0
     
     var body: some View {
@@ -57,11 +59,6 @@ struct ContentView: View {
                         
                     }
                     
-                    // Notification for finishing countdown
-                    if (timerModel.isFinished) {
-                        
-                    }
-                    
                 }
                 .frame(height: proxy.size.width)
                 .rotationEffect(.init(degrees: -90))
@@ -86,16 +83,20 @@ struct ContentView: View {
             }
         }
         .alert(isPresented: $timerModel.isFinished) {
-            Alert(title: Text("The time is up"), message: nil, dismissButton: .cancel(Text("Close")){
+            Alert(title: Text("\(Int(stepperIndex)) minutes are up"), message: nil, dismissButton: .cancel(Text("Close")){
                 timerModel.timerSound?.invalidate()
                 timerModel.timerSound = nil
                 timerModel.stopTimer()
             })
         }
+        .onAppear {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound, .alert]) { (_, _) in
+                
+            }
+        }
     }
     
-    
-    
+
 }
 
 
