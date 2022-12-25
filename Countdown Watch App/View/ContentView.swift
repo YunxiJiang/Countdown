@@ -24,23 +24,23 @@ struct ContentView: View {
                 ZStack{
                     ZStack {
                         Circle()
-                            .fill(.white.opacity(0.03))
+                            .fill(.white.opacity(0.02))
                             .padding(-30)
                         
                         // MARK: Shadow
                         Circle()
                             .trim(from: 0, to: timerModel.progress)
                             .stroke(Color.green,lineWidth: 5)
-                            .blur(radius: 15)
+                            .blur(radius: 7)
                             .padding(-2)
                             .animation(.easeInOut, value: timerModel.progress)
                         
                         Circle()
-                            .fill(Color.black)
+                            .fill(Color.black.opacity(0.15))
                         
                         Circle()
                             .trim(from: 0, to: timerModel.progress)
-                            .stroke(Color.green.opacity(0.6), lineWidth: 11)
+                            .stroke(Color.green.opacity(0.6), lineWidth: 15)
                             .animation(.easeInOut, value: timerModel.progress)
                     }
                     
@@ -65,7 +65,7 @@ struct ContentView: View {
                 .onTapGesture {
                     if timerModel.isStarted == false {
                         WKInterfaceDevice.current().play(.start)
-                        timerModel.seconds = Int(stepperIndex)
+                        timerModel.minutes = Int(stepperIndex)
                         timerModel.isStarted = true
                         timerModel.startTimer()
                     } else{
@@ -80,6 +80,8 @@ struct ContentView: View {
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             if timerModel.isStarted {
                 timerModel.updateTimer()
+                print(timerModel.totalSeconds)
+
             }
         }
         .alert(isPresented: $timerModel.isFinished) {
@@ -90,11 +92,16 @@ struct ContentView: View {
             })
         }
         .onAppear {
+            // Permissions for nitification
             UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound, .alert]) { (_, _) in
-                
             }
+            
+            // Setting Delagete Fro In - App Notification
+            UNUserNotificationCenter.current().delegate = timerModel
         }
     }
+    
+
     
 
 }

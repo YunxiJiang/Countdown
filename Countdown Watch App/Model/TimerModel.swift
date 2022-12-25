@@ -8,7 +8,10 @@
 import SwiftUI
 import UserNotifications
 
-class TimerModel: NSObject, ObservableObject {
+
+class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
+    
+    
     
     @Published var progress: CGFloat = 1
     @Published var timerStringValue: String = "00:00"
@@ -28,7 +31,10 @@ class TimerModel: NSObject, ObservableObject {
     // Timer sound
     @Published var timerSound: Timer? = nil
     
+    @Published var lastLeaveTime: Date = Date()
+    
     func startTimer(){
+        
         isStarted = true
         isFinished = false
         // Setting String value
@@ -50,9 +56,12 @@ class TimerModel: NSObject, ObservableObject {
         totalSeconds = 0
         staticTotalSeconds = 0
         timerStringValue = "00:00"
+       
     }
     
-    func updateTimer(){
+    
+    
+    @objc func updateTimer(){
         totalSeconds -= 1
         progress = CGFloat(totalSeconds) / CGFloat(staticTotalSeconds)
         progress = (progress < 0 ? 0 : progress)
@@ -60,13 +69,26 @@ class TimerModel: NSObject, ObservableObject {
         seconds = (totalSeconds % 60)
         timerStringValue = "\(minutes >= 10 ? "\(minutes)" : "0\(minutes)"):\(seconds >= 10 ? "\(seconds)" : "0\(seconds)")"
         if minutes == 0 && seconds == 0 {
-            isFinished = true
             timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
                 WKInterfaceDevice.current().play(.success)
             })
-            Notification() 
+            Notification()
+            isFinished = true
             stopTimer()
         }
+
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        // Telling what to do when receivies in foreground
+        completionHandler([.banner, .sound])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // When user tap notification, what will happen
+        completionHandler()
+
     }
     
     func Notification(){
@@ -75,11 +97,14 @@ class TimerModel: NSObject, ObservableObject {
         content.title = "Countdown"
         content.body = "The Time is Up \n (Back to app, close the ringing)"
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(1), repeats: false)
         
-        let req = UNNotificationRequest(identifier: "MSG", content: content, trigger: trigger)
+        let req = UNNotificationRequest(identifier: "TIMER", content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
-        
+
     }
+    
+    
+    
 }
