@@ -80,7 +80,7 @@ struct ContentView: View {
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             if timerModel.isStarted {
                 timerModel.updateTimer()
-                print(timerModel.totalSeconds)
+                
 
             }
         }

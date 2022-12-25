@@ -31,10 +31,20 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
     // Timer sound
     @Published var timerSound: Timer? = nil
     
-    @Published var lastLeaveTime: Date = Date()
+    // Measure what time the app start countdown
+    @Published var startTime: Date = Date()
+    // Measure what time when the app go to the background
+    @Published var backTime: Date = Date()
+    // Measure what time when the app is on inactive
+    @Published var inactiveTime: Date = Date()
+    
+    override init() {
+        super.init()
+        self.authorizeNotification()
+    }
     
     func startTimer(){
-        
+        startTime = Date()
         isStarted = true
         isFinished = false
         // Setting String value
@@ -59,9 +69,7 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
        
     }
     
-    
-    
-    @objc func updateTimer(){
+    func updateTimer(){
         totalSeconds -= 1
         progress = CGFloat(totalSeconds) / CGFloat(staticTotalSeconds)
         progress = (progress < 0 ? 0 : progress)
@@ -69,10 +77,10 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         seconds = (totalSeconds % 60)
         timerStringValue = "\(minutes >= 10 ? "\(minutes)" : "0\(minutes)"):\(seconds >= 10 ? "\(seconds)" : "0\(seconds)")"
         if minutes == 0 && seconds == 0 {
-            timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-                WKInterfaceDevice.current().play(.success)
-            })
-            Notification()
+//            timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+//                WKInterfaceDevice.current().play(.success)
+//            })
+            Notification(timerInterval: 1)
             isFinished = true
             stopTimer()
         }
@@ -85,23 +93,30 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         completionHandler([.banner, .sound])
     }
     
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // When user tap notification, what will happen
-        completionHandler()
-
+    func authorizeNotification(){
+        UNUserNotificationCenter.current().requestAuthorization(options: [.sound,.alert,.badge]) { _, _ in
+        }
+        
+        UNUserNotificationCenter.current().delegate = self
     }
     
-    func Notification(){
+    func Notification(timerInterval: Int){
          
         let content = UNMutableNotificationContent()
         content.title = "Countdown"
-        content.body = "The Time is Up \n (Back to app, close the ringing)"
+        content.body = "The Time is Up"
+        content.sound = UNNotificationSound.defaultCriticalSound(withAudioVolume: 10)
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(1), repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(timerInterval), repeats: false)
         
-        let req = UNNotificationRequest(identifier: "TIMER", content: content, trigger: trigger)
+        let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
-        UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
+        UNUserNotificationCenter.current().add(req) { (error) in
+            if error != nil {
+                print("error in notification \(String(describing: error))")
+            }
+
+        }
 
     }
     
