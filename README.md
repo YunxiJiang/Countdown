@@ -1,6 +1,8 @@
 # Countdown
 The Apple Watch App for Countdown
 
+![AppView](Countdown/Picture/appView.png)
+
 ## Introduction
 
 - Select what time you want to countdown
