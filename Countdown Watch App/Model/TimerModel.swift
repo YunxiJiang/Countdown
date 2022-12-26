@@ -36,7 +36,9 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
     // Measure what time when the app go to the background
     @Published var backTime: Date = Date()
     // Measure what time when the app is on inactive
-    @Published var inactiveTime: Date = Date()
+    @Published var inactiveTimeFirst: Date = Date()
+    
+    @Published var inactiveTimeSecond: Date = Date()
     
     override init() {
         super.init()
@@ -53,6 +55,8 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         // Caculating total seconds for timer bar animation
         totalSeconds = minutes * 60 + seconds
         staticTotalSeconds = totalSeconds
+        print(staticTotalSeconds)
+        Notification(timerInterval: staticTotalSeconds)
     }
     
     func stopTimer(){
@@ -66,6 +70,7 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         totalSeconds = 0
         staticTotalSeconds = 0
         timerStringValue = "00:00"
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
        
     }
     
@@ -80,7 +85,7 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
 //            timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
 //                WKInterfaceDevice.current().play(.success)
 //            })
-            Notification(timerInterval: 1)
+            
             isFinished = true
             stopTimer()
         }
@@ -90,6 +95,8 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
         // Telling what to do when receivies in foreground
+        print("will present")
+        stopTimer()
         completionHandler([.banner, .sound])
     }
     

@@ -27,6 +27,11 @@ struct Countdown_Watch_AppApp: App {
     // 4. From home back to app: inactive (start running) - active
     @State var enterBackModel = false
     
+    @State var isLockAndBackToBackground = false
+    
+    
+    @State var isUpdateInInactive = false
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -35,59 +40,66 @@ struct Countdown_Watch_AppApp: App {
         .onChange(of: phase) { newValue in
             if timerModel.isStarted {
                 if newValue == .background{
+                    
                     enterBackModel = true
                     timerModel.backTime = Date()
                     
-                    
-                    // Alarm notification
-                    // lock screen, back to background
-                    let timeInterval = Int(timerModel.backTime.timeIntervalSince(timerModel.inactiveTime))
-                    if timeInterval >= 100 && enterBackModel == true{
-                        
-                        let timerIntervalForNotification = timerModel.staticTotalSeconds - Int(timerModel.inactiveTime.timeIntervalSince(timerModel.startTime))
-                        
-                        
-                        timerModel.Notification(timerInterval: timerIntervalForNotification)
-                        
-                    } else if enterBackModel == true && inactiveCounts == 1 { // app -> home
-                        let timerIntervalForNotification = timerModel.staticTotalSeconds - Int(timerModel.backTime.timeIntervalSince(timerModel.startTime))
-                        
-                        
-                        timerModel.Notification(timerInterval: timerIntervalForNotification)
+                    if Int(timerModel.backTime.timeIntervalSince(timerModel.inactiveTimeFirst)) > 119 {
+                        isLockAndBackToBackground = true
+                    } else {
+                        isLockAndBackToBackground = false
                     }
                     
                 }
                 if newValue == .active && timerModel.totalSeconds != 0 {
                     
-                    
-                    // update time
-                    // lock screen, not back to background
-                    if inactiveCounts == 1 && enterBackModel == false && Int(Date().timeIntervalSince(timerModel.inactiveTime)) != 0{
-                        updateTime(time: timerModel.inactiveTime)
+                    let curentTime = Date()
+                    let timeInterl = curentTime.timeIntervalSince(timerModel.startTime)
+                    if timerModel.staticTotalSeconds - Int(timeInterl) <= 0 {
+                        timerModel.isFinished = true
+                        timerModel.stopTimer()
+                    } else if enterBackModel == false && isUpdateInInactive == false && Int(Date().timeIntervalSince(inactiveCounts == 1 ? timerModel.inactiveTimeFirst : timerModel.inactiveTimeSecond)) > 4{ // lock, not into back
+                        
+                        updateTime(time: timerModel.inactiveTimeFirst)
                         enterBackModel = false
+                        isUpdateInInactive = false
+                        inactiveCounts = 0
+                        
+                    } else { // Multi-task
+                        
+                        isUpdateInInactive = false
                         inactiveCounts = 0
                     }
-                    
+
                     
                 }
                 if newValue == .inactive{
                     
-                    timerModel.inactiveTime = Date()
-                    
                     inactiveCounts += 1
-                    // Alarm notification
-                    // lockscreen, not back to background, don't alarm notification for now, just update view. Because eventually, the app will back to background or even the user is watching the view, when time is up, it will also sent notification
-                    //                    if inactiveCounts == 1 && enterBackModel == false && Int(Date().timeIntervalSince(timerModel.inactiveTime)) != 0 {
-                    //                    }
                     
-                    // update time
-                    // home -> app
-                    if inactiveCounts == 2 && enterBackModel == true {
-                        updateTime(time: timerModel.backTime)
-                        enterBackModel = false
-                        inactiveCounts = 0
+                    
+                    if inactiveCounts == 1 {
+                        timerModel.inactiveTimeFirst = Date()
+                        
+                    } else {
+                        timerModel.inactiveTimeSecond = Date()
                     }
                     
+                    
+                    if enterBackModel == true && isLockAndBackToBackground  { //  lock - into background
+                        
+                        updateTime(time: timerModel.inactiveTimeFirst)
+                        enterBackModel = false
+                        isUpdateInInactive = true
+                        inactiveCounts = 0
+                    } else if enterBackModel == true && inactiveCounts >= 2 { // app - home - app
+                        
+                        updateTime(time: timerModel.backTime)
+                        enterBackModel = false
+                        isUpdateInInactive = true
+                        inactiveCounts = 0
+                        
+                    }
                     
                 }
                 
@@ -97,41 +109,18 @@ struct Countdown_Watch_AppApp: App {
     }
     
     func updateTime(time: Date){
-        withAnimation(.default) {
+        withAnimation(.spring()) {
             let currentTimeStampDiff = Date().timeIntervalSince(time)
             timerModel.totalSeconds -= Int(currentTimeStampDiff)
         }
         if timerModel.totalSeconds <= 0 {
-            //                timerModel.timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            //                    WKInterfaceDevice.current().play(.success)
-            //                })
             timerModel.isFinished = true
             timerModel.stopTimer()
         }
         
         
     }
-    
-    //    func checkingTime(){
-    //
-    //        let currentTimeStampDiff = Date().timeIntervalSince(timerModel.backTime)
-    //
-    //        if timerModel.totalSeconds  - Int(currentTimeStampDiff) <= 0 {
-    //            timerModel.timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-    //                WKInterfaceDevice.current().play(.success)
-    //            })
-    //            timerModel.isFinished = true
-    //            timerModel.stopTimer()
-    //
-    //        } else if enterBackModel == true{
-    //
-    //            enterBackModel = false
-    //            withAnimation(.default) {
-    //
-    //            }
-    //
-    //        }
-    //    }
+
     
     
 }

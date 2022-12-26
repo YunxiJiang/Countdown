@@ -80,12 +80,10 @@ struct ContentView: View {
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             if timerModel.isStarted {
                 timerModel.updateTimer()
-                
-
             }
         }
         .alert(isPresented: $timerModel.isFinished) {
-            Alert(title: Text("\(Int(stepperIndex)) minutes are up"), message: nil, dismissButton: .cancel(Text("Close")){
+            Alert(title: Text("\(Int(stepperIndex)) minutes is up"), message: nil, dismissButton: .cancel(Text("Close")){
                 timerModel.timerSound?.invalidate()
                 timerModel.timerSound = nil
                 timerModel.stopTimer()
