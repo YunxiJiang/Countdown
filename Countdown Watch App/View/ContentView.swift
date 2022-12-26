@@ -65,7 +65,7 @@ struct ContentView: View {
                 .onTapGesture {
                     if timerModel.isStarted == false {
                         WKInterfaceDevice.current().play(.start)
-                        timerModel.minutes = Int(stepperIndex)
+                        timerModel.seconds = Int(stepperIndex)
                         timerModel.isStarted = true
                         timerModel.startTimer()
                     } else{

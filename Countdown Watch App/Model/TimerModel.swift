@@ -8,7 +8,6 @@
 import SwiftUI
 import UserNotifications
 
-
 class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
     
     
@@ -112,6 +111,7 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         let content = UNMutableNotificationContent()
         content.title = "Countdown"
         content.body = "The Time is Up"
+        
         content.sound = UNNotificationSound.defaultCriticalSound(withAudioVolume: 10)
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(timerInterval), repeats: false)
