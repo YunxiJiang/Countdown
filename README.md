@@ -1,7 +1,7 @@
 # Countdown
 The Apple Watch App for Countdown
 
-![AppView](Countdown/Picture/appView.png)
+![AppView](/Picture/appView.png)
 
 ## Introduction
 
