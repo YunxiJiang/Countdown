@@ -17,8 +17,8 @@ struct ChartView: View {
     
     let data: [ChartData] = [
         .init(date: Date.from(year: 2023, month: 1, day: 22), DataElement: 25),
-        .init(date: Date.from(year: 2023, month: 1, day: 23), DataElement: 50),
-        .init(date: Date.from(year: 2023, month: 1, day: 24), DataElement: 70),
+        .init(date: Date.from(year: 2023, month: 1, day: 24), DataElement: 50),
+        .init(date: Date.from(year: 2023, month: 1, day: 23), DataElement: 5),
         .init(date: Date.from(year: 2023, month: 1, day: 25), DataElement: 30),
         .init(date: Date.from(year: 2023, month: 1, day: 26), DataElement: 30),
         .init(date: Date.from(year: 2023, month: 1, day: 27), DataElement: 5),
@@ -49,6 +49,8 @@ struct ChartView: View {
     private var shortDateFormatStyle = DateFormatStyle(dateFormatTemplate: "Md")
     
     private func updateChartDataRange() {
+//        var chartDataRange = (0...(data.count < 6 ? data.count : 6))
+        
         if (highlightedDateIndex - chartDataRange.lowerBound) < 2, chartDataRange.lowerBound > 0 {
             let newLowerBound = max(0, chartDataRange.lowerBound - 1)
             let newUpperBound = min(newLowerBound + 6, data.count - 1)
@@ -70,7 +72,12 @@ struct ChartView: View {
     }
     
     private func isLastDataPoint(_ dataPoint: ChartData) -> Bool {
-        data[chartDataRange.upperBound].id == dataPoint.id
+        if chartDataRange.upperBound < data.count {
+            return data[chartDataRange.upperBound].id == dataPoint.id
+        } else {
+            return data[data.count - 1].id == dataPoint.id
+        }
+        
     }
     
     private var chart: some View {
@@ -99,35 +106,52 @@ struct ChartView: View {
     }
     
     var body: some View {
-        chart
-            .focusable()
-            .digitalCrownRotation(
-                detent: $highlightedDateIndex,
-                from: 0,
-                through: data.count - 1,
-                by: 1,
-                sensitivity: .medium
-            ) { crownEvent in
-                isCrownIdle = false
-                crownOffset = crownEvent.offset
-            } onIdle: {
-                isCrownIdle = true
+        
+        if data.isEmpty || data.count <= 1 {
+            VStack(alignment: .leading, spacing: 10){
+                Text("Need to have more time spend data")
+                    .fontWeight(.bold)
+                Text("Please keep using app")
+                    .fontWeight(.bold)
             }
-            .onChange(of: isCrownIdle) { newValue in
-                withAnimation(newValue ? .easeOut : .easeIn) {
-                    crownPositionOpacity = newValue ? 0.2 : 1.0
-                }
-            }
-            .onChange(of: highlightedDateIndex) { newValue in
-                withAnimation {
-                    updateChartDataRange()
-                }
-            }
-            .padding()
-            .edgesIgnoringSafeArea(.bottom)
             .navigationTitle("Time Spend")
             .navigationBarTitleDisplayMode(.inline)
+
+        } else {
+            chart
+                .focusable()
+                .digitalCrownRotation(
+                    detent: $highlightedDateIndex,
+                    from: 0,
+                    through: data.count - 1,
+                    by: 1,
+                    sensitivity: .medium
+                ) { crownEvent in
+                    isCrownIdle = false
+                    crownOffset = crownEvent.offset
+                } onIdle: {
+                    isCrownIdle = true
+                }
+                .onChange(of: isCrownIdle) { newValue in
+                    withAnimation(newValue ? .easeOut : .easeIn) {
+                        crownPositionOpacity = newValue ? 0.2 : 1.0
+                    }
+                }
+                .onChange(of: highlightedDateIndex) { newValue in
+                    withAnimation {
+                        updateChartDataRange()
+                    }
+                }
+    //            .edgesIgnoringSafeArea(.bottom)
+                .padding(.init(top: 1, leading: 1, bottom: 0.1, trailing: 1))
+                .navigationTitle("Time Spend")
+                .navigationBarTitleDisplayMode(.inline)
+        }
+        
+
+
     }
+        
 }
 struct ChartView_Previews: PreviewProvider {
     static var previews: some View {
