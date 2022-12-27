@@ -11,6 +11,9 @@ import UserNotifications
 
 @main
 struct Countdown_Watch_AppApp: App {
+    
+    @StateObject var timeDataController = TimeDataController()
+    
     @StateObject var timerModel: TimerModel = .init()
     
     @State var inactiveCounts: Int = 0
@@ -36,6 +39,7 @@ struct Countdown_Watch_AppApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(timerModel)
+                .environment(\.managedObjectContext, timeDataController.container.viewContext)
         }
         .onChange(of: phase) { newValue in
             if timerModel.isStarted {
