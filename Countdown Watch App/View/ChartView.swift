@@ -10,27 +10,27 @@ import Charts
 
 struct ChartView: View {
     
-    // Use for store data
-    @Environment(\.managedObjectContext) var moc
     
-    //    @FetchRequest(sortDescriptors: []) var timeData: FetchedResults<Time>
+    @StateObject var timeDataController = TimeDataController()
     
-    let data: [ChartData] = [
-        .init(date: Date.from(year: 2023, month: 1, day: 22), DataElement: 25),
-        .init(date: Date.from(year: 2023, month: 1, day: 24), DataElement: 50),
-        .init(date: Date.from(year: 2023, month: 1, day: 23), DataElement: 5),
-        .init(date: Date.from(year: 2023, month: 1, day: 25), DataElement: 30),
-        .init(date: Date.from(year: 2023, month: 1, day: 26), DataElement: 30),
-        .init(date: Date.from(year: 2023, month: 1, day: 27), DataElement: 5),
-        .init(date: Date.from(year: 2023, month: 1, day: 28), DataElement: 5),
-        .init(date: Date.from(year: 2023, month: 1, day: 29), DataElement: 5),
-        .init(date: Date.from(year: 2023, month: 1, day: 30), DataElement: 5),
-        .init(date: Date.from(year: 2023, month: 1, day: 31), DataElement: 6),
-        .init(date: Date.from(year: 2023, month: 2, day: 1), DataElement: 8),
-        .init(date: Date.from(year: 2023, month: 2, day: 2), DataElement: 10),
-        .init(date: Date.from(year: 2023, month: 2, day: 3), DataElement: 70),
-        .init(date: Date.from(year: 2023, month: 2, day: 4), DataElement: 20)
-    ]
+//    @FetchRequest(sortDescriptors: []) var data: FetchedResults<TimeData>
+    
+//    let data: [ChartData] = [
+//        .init(date: Date.from(year: 2023, month: 1, day: 22), time: 25),
+//        .init(date: Date.from(year: 2023, month: 1, day: 24), time: 50),
+//        .init(date: Date.from(year: 2023, month: 1, day: 23), time: 5),
+//        .init(date: Date.from(year: 2023, month: 1, day: 25), time: 30),
+//        .init(date: Date.from(year: 2023, month: 1, day: 26), time: 30),
+//        .init(date: Date.from(year: 2023, month: 1, day: 27), time: 5),
+//        .init(date: Date.from(year: 2023, month: 1, day: 28), time: 5),
+//        .init(date: Date.from(year: 2023, month: 1, day: 29), time: 5),
+//        .init(date: Date.from(year: 2023, month: 1, day: 30), time: 5),
+//        .init(date: Date.from(year: 2023, month: 1, day: 31), time: 6),
+//        .init(date: Date.from(year: 2023, month: 2, day: 1), time: 8),
+//        .init(date: Date.from(year: 2023, month: 2, day: 2), time: 10),
+//        .init(date: Date.from(year: 2023, month: 2, day: 3), time: 70),
+//        .init(date: Date.from(year: 2023, month: 2, day: 4), time: 20)
+//    ]
     
     /// The index of the highlighted chart value. This is for crown scrolling.
     @State private var highlightedDateIndex: Int = 0
@@ -49,46 +49,46 @@ struct ChartView: View {
     private var shortDateFormatStyle = DateFormatStyle(dateFormatTemplate: "Md")
     
     private func updateChartDataRange() {
-//        var chartDataRange = (0...(data.count < 6 ? data.count : 6))
+//        var chartDataRange = (0...(timeDataController.data.count < 6 ? timeDataController.data.count : 6))
         
         if (highlightedDateIndex - chartDataRange.lowerBound) < 2, chartDataRange.lowerBound > 0 {
             let newLowerBound = max(0, chartDataRange.lowerBound - 1)
-            let newUpperBound = min(newLowerBound + 6, data.count - 1)
+            let newUpperBound = min(newLowerBound + 6, timeDataController.data.count - 1)
             chartDataRange = (newLowerBound...newUpperBound)
             return
         }
-        if (chartDataRange.upperBound - highlightedDateIndex) < 2, chartDataRange.upperBound < data.count - 1 {
-            let newUpperBound = min(chartDataRange.upperBound + 1, data.count - 1)
+        if (chartDataRange.upperBound - highlightedDateIndex) < 2, chartDataRange.upperBound < timeDataController.data.count - 1 {
+            let newUpperBound = min(chartDataRange.upperBound + 1, timeDataController.data.count - 1)
             let newLowerBound = max(0, newUpperBound - 6)
             chartDataRange = (newLowerBound...newUpperBound)
             return
         }
     }
     
-    private var chartData: [ChartData] {
-        Array(data[chartDataRange.clamped(to: (0...data.count - 1))]).sorted{
-            $0.date < $1.date
-        }
+    private var chartData: [TimeData] {
+        Array(timeDataController.data[chartDataRange.clamped(to: (0...timeDataController.data.count - 1))])
     }
     
-    private func isLastDataPoint(_ dataPoint: ChartData) -> Bool {
-        if chartDataRange.upperBound < data.count {
-            return data[chartDataRange.upperBound].id == dataPoint.id
+//    private var data = timeDataController.data
+    
+    private func isLastDataPoint(_ dataPoint: TimeData) -> Bool {
+        if chartDataRange.upperBound < timeDataController.data.count {
+            return timeDataController.data[chartDataRange.upperBound].id == dataPoint.id
         } else {
-            return data[data.count - 1].id == dataPoint.id
+            return timeDataController.data[timeDataController.data.count - 1].id == dataPoint.id
         }
         
     }
     
     private var chart: some View {
         Chart(chartData) { dataPoint in
-            BarMark(x: .value("Date", dataPoint.date, unit: .day),
-                    y: .value("Completed", dataPoint.DataElement))
+            BarMark(x: .value("Date", dataPoint.date!, unit: .day),
+                    y: .value("Completed", dataPoint.minutes))
             .foregroundStyle(Color.green.opacity(0.6).gradient)
-            .annotation(
-                position: isLastDataPoint(dataPoint) ? .topLeading : .topTrailing,
-                spacing: 0
-            ){}
+//            .annotation(
+//                position: isLastDataPoint(dataPoint) ? .topLeading : .topTrailing,
+//                spacing: 0
+//            ){}
             
             RuleMark(x: .value("Date", crownOffsetDate, unit: .day))
                 .foregroundStyle(Color.orange.opacity(crownPositionOpacity).gradient)
@@ -100,14 +100,15 @@ struct ChartView: View {
     
     /// The date value that corresponds to the crown offset.
     private var crownOffsetDate: Date {
-        let dateDistance = data[0].date.distance(
-            to: data[data.count - 1].date) * (crownOffset / Double(data.count - 1))
-        return data[0].date.addingTimeInterval(dateDistance)
+        
+        let dateDistance = timeDataController.data[0].date!.distance(
+            to: timeDataController.data[timeDataController.data.count - 1].date!) * (crownOffset / Double(timeDataController.data.count - 1))
+        return timeDataController.data[0].date!.addingTimeInterval(dateDistance)
     }
     
     var body: some View {
         
-        if data.isEmpty || data.count <= 1 {
+        if timeDataController.data.isEmpty || timeDataController.data.count <= 1 {
             VStack(alignment: .leading, spacing: 10){
                 Text("Need to have more time spend data")
                     .fontWeight(.bold)
@@ -123,7 +124,7 @@ struct ChartView: View {
                 .digitalCrownRotation(
                     detent: $highlightedDateIndex,
                     from: 0,
-                    through: data.count - 1,
+                    through: timeDataController.data.count - 1,
                     by: 1,
                     sensitivity: .medium
                 ) { crownEvent in
@@ -134,16 +135,16 @@ struct ChartView: View {
                 }
                 .onChange(of: isCrownIdle) { newValue in
                     withAnimation(newValue ? .easeOut : .easeIn) {
-                        crownPositionOpacity = newValue ? 0.2 : 1.0
+                        crownPositionOpacity = newValue ? 0.5 : 1.0
                     }
                 }
                 .onChange(of: highlightedDateIndex) { newValue in
-                    withAnimation {
+                    withAnimation(.easeInOut) {
                         updateChartDataRange()
                     }
                 }
     //            .edgesIgnoringSafeArea(.bottom)
-                .padding(.init(top: 1, leading: 1, bottom: 0.1, trailing: 1))
+                .padding()
                 .navigationTitle("Time Spend")
                 .navigationBarTitleDisplayMode(.inline)
         }

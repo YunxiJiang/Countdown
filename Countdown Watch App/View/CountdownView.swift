@@ -11,6 +11,7 @@ import UserNotifications
 struct CountdownView: View {
     @EnvironmentObject var timerModel: TimerModel
     
+    @StateObject var timeDataController = TimeDataController()
     // Countdown time
     @State var stepperIndex: Double = 25.0
     
@@ -64,7 +65,7 @@ struct CountdownView: View {
                 .onTapGesture {
                     if timerModel.isStarted == false {
                         WKInterfaceDevice.current().play(.start)
-                        timerModel.seconds = Int(stepperIndex)
+                        timerModel.minutes = Int(stepperIndex)
                         timerModel.isStarted = true
                         timerModel.startTimer()
                     } else{
@@ -74,6 +75,28 @@ struct CountdownView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            
+//            Button {
+//                var day = 1
+//                var time = 10
+//                var count = 20
+//                while count > 0 {
+//                    let date = Date.from(year: 2022, month: 1, day: day)
+//                    timeDataController.addTimeData(date: date, time: time)
+//                    day += 1
+//                    time += 5
+//                    count -= 1
+//                }
+//            } label: {
+//                Text("Add data")
+//            }
+//
+//            Button {
+//                timeDataController.deleteAll()
+//            } label: {
+//                Text("delete data")
+//            }
+
         }
         .padding()
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in

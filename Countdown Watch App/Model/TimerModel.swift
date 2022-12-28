@@ -10,7 +10,7 @@ import UserNotifications
 
 class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
     
-    
+    @StateObject var timeDataController = TimeDataController()
     
     @Published var progress: CGFloat = 1
     @Published var timerStringValue: String = "00:00"
@@ -39,6 +39,8 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
     
     @Published var inactiveTimeSecond: Date = Date()
     
+//    @Published var minutesForDataSets: Int32 = 0
+    
     override init() {
         super.init()
         self.authorizeNotification()
@@ -54,11 +56,17 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         // Caculating total seconds for timer bar animation
         totalSeconds = minutes * 60 + seconds
         staticTotalSeconds = totalSeconds
-        print(staticTotalSeconds)
+
         Notification(timerInterval: staticTotalSeconds)
     }
     
     func stopTimer(){
+        let currentDate = Date()
+        if totalSeconds <= 0 {
+            timeDataController.addTimeData(date: currentDate, minutes: Int32(staticTotalSeconds / 60))
+        } else {
+            timeDataController.addTimeData(date: currentDate, minutes: Int32(totalSeconds / 60))
+        }
         isStarted = false
         
         withAnimation {
@@ -94,7 +102,7 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
         // Telling what to do when receivies in foreground
-        print("will present")
+        
         stopTimer()
         completionHandler([.banner, .sound])
     }

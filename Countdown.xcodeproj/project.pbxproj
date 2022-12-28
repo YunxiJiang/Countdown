@@ -47,7 +47,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		34E71E0F2955231F0096A791 /* Countdown-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Countdown-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		34E71E16295B538C0096A791 /* Time.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Time.xcdatamodel; sourceTree = "<group>"; };
 		34E71E1A295B54310096A791 /* ChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartData.swift; sourceTree = "<group>"; };
 		34E71E1D295B57AF0096A791 /* TimeDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDataController.swift; sourceTree = "<group>"; };
@@ -104,7 +103,6 @@
 			isa = PBXGroup;
 			children = (
 				34E71E1C295B57950096A791 /* Controller */,
-				34E71E0F2955231F0096A791 /* Countdown-Watch-App-Info.plist */,
 				34F6F79D29525099001D764B /* View */,
 				34F6F79C2952508E001D764B /* Model */,
 				34F6F78A29525086001D764B /* CountdownApp.swift */,
