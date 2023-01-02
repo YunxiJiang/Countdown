@@ -44,7 +44,7 @@ struct Countdown_Watch_AppApp: App {
         .onChange(of: phase) { newValue in
             if timerModel.isStarted {
                 if newValue == .background{
-                    
+//                    print("back")
                     enterBackModel = true
                     timerModel.backTime = Date()
                     
@@ -63,18 +63,18 @@ struct Countdown_Watch_AppApp: App {
                         timerModel.isFinished = true
                         timerModel.stopTimer() // add minutes to database
                     } else if enterBackModel == false && isUpdateInInactive == false && Int(Date().timeIntervalSince(inactiveCounts == 1 ? timerModel.inactiveTimeFirst : timerModel.inactiveTimeSecond)) > 4{ // lock, not into back
-                        
+//                        print("lock not into back")
                         updateTime(time: timerModel.inactiveTimeFirst)
                         enterBackModel = false
                         isUpdateInInactive = false
                         inactiveCounts = 0
                         
                     } else { // Multi-task
-                        
+//                        print("multi-task")
                         isUpdateInInactive = false
                         inactiveCounts = 0
                     }
-
+                    
                     
                 }
                 if newValue == .inactive{
@@ -89,15 +89,16 @@ struct Countdown_Watch_AppApp: App {
                         timerModel.inactiveTimeSecond = Date()
                     }
                     
-                    
+//                    print("inactive")
+//                    print(inactiveCounts)
                     if enterBackModel == true && isLockAndBackToBackground  { //  lock - into background
-                        
+//                        print("lock into back")
                         updateTime(time: timerModel.inactiveTimeFirst)
                         enterBackModel = false
                         isUpdateInInactive = true
                         inactiveCounts = 0
-                    } else if enterBackModel == true && inactiveCounts >= 2 { // app - home - app
-                        
+                    } else if enterBackModel == true { // app - home - app, home - multi - lock - background - multi
+//                        print("app - home -- app")
                         updateTime(time: timerModel.backTime)
                         enterBackModel = false
                         isUpdateInInactive = true
@@ -124,7 +125,7 @@ struct Countdown_Watch_AppApp: App {
         
         
     }
-
+    
     
     
 }

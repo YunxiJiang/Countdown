@@ -56,7 +56,7 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         // Caculating total seconds for timer bar animation
         totalSeconds = minutes * 60 + seconds
         staticTotalSeconds = totalSeconds
-print(minutes)
+
         Notification(timerInterval: staticTotalSeconds)
     }
     
@@ -69,6 +69,7 @@ print(minutes)
 //        }
 //    }
     
+    // MARK: There are multiple place call this function, so the database will store a lot of useless date data
     func stopTimer(){
 //        let currentDate = Date()
         if totalSeconds <= 0 { // Complete whole countdown
