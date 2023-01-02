@@ -61,7 +61,7 @@ struct Countdown_Watch_AppApp: App {
                     let timeInterl = curentTime.timeIntervalSince(timerModel.startTime)
                     if timerModel.staticTotalSeconds - Int(timeInterl) <= 0 {
                         timerModel.isFinished = true
-                        timerModel.stopTimer()
+                        timerModel.stopTimer() // add minutes to database
                     } else if enterBackModel == false && isUpdateInInactive == false && Int(Date().timeIntervalSince(inactiveCounts == 1 ? timerModel.inactiveTimeFirst : timerModel.inactiveTimeSecond)) > 4{ // lock, not into back
                         
                         updateTime(time: timerModel.inactiveTimeFirst)

@@ -17,8 +17,8 @@ struct ChartView: View {
     
 //    let data: [ChartData] = [
 //        .init(date: Date.from(year: 2023, month: 1, day: 22), time: 25),
-//        .init(date: Date.from(year: 2023, month: 1, day: 24), time: 50),
-//        .init(date: Date.from(year: 2023, month: 1, day: 23), time: 5),
+//        .init(date: Date.from(year: 2023, month: 1, day: 22), time: 50),
+//        .init(date: Date.from(year: 2023, month: 1, day: 25), time: 5),
 //        .init(date: Date.from(year: 2023, month: 1, day: 25), time: 30),
 //        .init(date: Date.from(year: 2023, month: 1, day: 26), time: 30),
 //        .init(date: Date.from(year: 2023, month: 1, day: 27), time: 5),
@@ -81,6 +81,7 @@ struct ChartView: View {
     }
     
     private var chart: some View {
+        // The chart will automaticly add the value for same day, even we have multiple cplumn for same day
         Chart(chartData) { dataPoint in
             BarMark(x: .value("Date", dataPoint.date!, unit: .day),
                     y: .value("Completed", dataPoint.minutes))

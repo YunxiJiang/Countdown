@@ -56,17 +56,33 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         // Caculating total seconds for timer bar animation
         totalSeconds = minutes * 60 + seconds
         staticTotalSeconds = totalSeconds
-
+print(minutes)
         Notification(timerInterval: staticTotalSeconds)
     }
     
+//    func updateOrAddTime(index: Int?, currentDate: Date, minutes: Int32) {
+//        if index == nil {
+//            timeDataController.addTimeData(date: currentDate, minutes: minutes)
+//        } else {
+//            let newMinutes = timeDataController.data[index!].minutes + minutes
+//            timeDataController.updateTimeData(index: index!, newMinutes: newMinutes)
+//        }
+//    }
+    
     func stopTimer(){
-        let currentDate = Date()
-        if totalSeconds <= 0 {
-            timeDataController.addTimeData(date: currentDate, minutes: Int32(staticTotalSeconds / 60))
+//        let currentDate = Date()
+        if totalSeconds <= 0 { // Complete whole countdown
+            print("test stop: static \(staticTotalSeconds)")
+            let minutes = Int32(staticTotalSeconds / 60)
+            timeDataController.addTimeData(date: startTime, minutes: minutes)
+            print("test: Complete whole countdown add \(minutes) mins")
+            
         } else {
-            timeDataController.addTimeData(date: currentDate, minutes: Int32(totalSeconds / 60))
+            let minutes = Int32((staticTotalSeconds - totalSeconds) / 60)
+            timeDataController.addTimeData(date: startTime, minutes: minutes)
+            print("test: Not complete add \(minutes) mins")
         }
+        
         isStarted = false
         
         withAnimation {
@@ -78,23 +94,24 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         staticTotalSeconds = 0
         timerStringValue = "00:00"
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        
+
        
     }
     
-    func updateTimer(){
+    func updateTime(){
         totalSeconds -= 1
         progress = CGFloat(totalSeconds) / CGFloat(staticTotalSeconds)
         progress = (progress < 0 ? 0 : progress)
         minutes = (totalSeconds / 60) % 60
         seconds = (totalSeconds % 60)
         timerStringValue = "\(minutes >= 10 ? "\(minutes)" : "0\(minutes)"):\(seconds >= 10 ? "\(seconds)" : "0\(seconds)")"
-        if minutes == 0 && seconds == 0 {
+        if totalSeconds <= 0 {
 //            timerSound = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
 //                WKInterfaceDevice.current().play(.success)
 //            })
-            
             isFinished = true
-            stopTimer()
+            stopTimer() // add minutes to database
         }
 
     }
@@ -103,7 +120,7 @@ class TimerModel: NSObject,UNUserNotificationCenterDelegate, ObservableObject {
         
         // Telling what to do when receivies in foreground
         
-        stopTimer()
+//        stopTimer()
         completionHandler([.banner, .sound])
     }
     

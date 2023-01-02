@@ -51,7 +51,7 @@ struct CountdownView: View {
                             .rotationEffect(.init(degrees: 90))
                         
                     } else {
-                        Stepper(value: $stepperIndex, in: (5.0...50.0), step: 5.0, format: .number) {}
+                        Stepper(value: $stepperIndex, in: (1.0...50.0), step: 1.0, format: .number) {}
                             .foregroundColor(.white)
                             .accentColor(.clear)
                             .rotationEffect(.init(degrees: 90))
@@ -101,14 +101,14 @@ struct CountdownView: View {
         .padding()
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             if timerModel.isStarted {
-                timerModel.updateTimer()
+                timerModel.updateTime()
             }
         }
         .alert(isPresented: $timerModel.isFinished) {
             Alert(title: Text("\(Int(stepperIndex)) minutes is up"), message: nil, dismissButton: .cancel(Text("Close")){
                 timerModel.timerSound?.invalidate()
                 timerModel.timerSound = nil
-                timerModel.stopTimer()
+//                timerModel.stopTimer()
             })
         }
         .onAppear {
